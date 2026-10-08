@@ -1,0 +1,9 @@
+INVOICE
+Vendor: Northgate Supply Co
+Bill To: Brightleaf HVAC, 220 Industrial Pkwy, Columbus OH
+Inv # NG-2291    Date 2026-03-01    Terms Net 30
+1) R-410A refrigerant, 6 cylinders ...... 1,140.00
+2) Filter racks x12 .....................   384.00
+3) Freight ..............................    96.50
+TOTAL DUE: 1,620.50     Due: 2026-03-31
+Remit: ACH - Northgate Operating, acct 4480219

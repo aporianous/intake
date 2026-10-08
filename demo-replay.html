@@ -1,0 +1,59 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>ai-workflow-demo — actual run replay</title>
+<style>
+ body{margin:0;background:#0b0f14;color:#d6e2ee;font:14px/1.55 Consolas,ui-monospace,monospace}
+ .wrap{max-width:900px;margin:36px auto;padding:0 16px}
+ h1{font:600 15px/1.4 system-ui,Segoe UI,sans-serif;color:#8ea3b8;margin:0 0 12px}
+ .term{background:#0f151c;border:1px solid #1e2a36;border-radius:10px;padding:18px 20px;min-height:360px;white-space:pre-wrap}
+ .g{color:#5ad19a}.y{color:#e6c07b}.r{color:#e06c75}.m{color:#61afef}.d{color:#5c6b7a}
+ .cursor{display:inline-block;width:8px;height:15px;background:#8ea3b8;vertical-align:-2px;animation:b 1s steps(1) infinite}
+ @keyframes b{50%{opacity:0}}
+ .bar{margin-top:10px;color:#5c6b7a;font-size:12px;font-family:system-ui,Segoe UI,sans-serif}
+ .bar b{color:#8ea3b8;cursor:pointer}
+</style></head>
+<body><div class="wrap">
+<h1>ai-workflow-demo — actual run output (node run.js)</h1>
+<div class="term" id="t"></div>
+<div class="bar">messy text → AI extraction → structured records → action items (+ human-review flag) &nbsp;·&nbsp; <b id="replay">↻ replay</b></div>
+</div>
+<script>
+const LINES = [
+ ["$ node run.js", ""],
+ ["", ""],
+ ["Extracting 4 messy input file(s)...", ""],
+ ["", ""],
+ ["  [OK]     email-01.txt          -> email         | Dana follows up on rooftop units, confirm by Friday", "g"],
+ ["  [OK]     invoice-01.txt        -> invoice       | NG-2291  $1,620.50  due 2026-03-31", "g"],
+ ["  [REVIEW] meeting-notes-01.txt  -> meeting_note  | 5 action items", "y"],
+ ["  [REVIEW] messy-form-01.txt     -> email         | warehouse spray-foam quote request", "y"],
+ ["", ""],
+ ["Done.", ""],
+ ["  out/records.jsonl   4 structured records", "d"],
+ ["  out/tasks.csv       7 action items", "d"],
+ ["  2 of 4 flagged for human review  (action items missing owner/due)", "d"],
+];
+const term = document.getElementById('t');
+let timers = [];
+function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+function play(){
+  clearTimers(); term.textContent = "";
+  let delay = 0;
+  LINES.forEach(([text, cls]) => {
+    const line = document.createElement('div');
+    if (cls) line.className = cls;
+    term.appendChild(line);
+    for (let i = 0; i <= text.length; i++) {
+      delay += 9;
+      timers.push(setTimeout(() => { line.textContent = text.slice(0, i); }, delay));
+    }
+    delay += (text === "" ? 60 : 140);
+  });
+  timers.push(setTimeout(() => {
+    const c = document.createElement('span'); c.className = 'cursor'; c.id = 'cur';
+    term.appendChild(c);
+  }, delay + 150));
+}
+document.getElementById('replay').onclick = play;
+play();
+</script>
+</body></html>

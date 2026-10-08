@@ -1,0 +1,7 @@
+Standup notes 3/4 (sales)
+- Sara: migrating the CRM export, blocked on an API key from Dana
+- agreed to push the Northgate renewal to April; someone will email them
+- Mike to send updated pricing deck
+- decision: drop the Denver pilot
+- we should follow up with the rooftop quote - no owner yet
+- next sync Thursday
