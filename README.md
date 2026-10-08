@@ -1,11 +1,11 @@
-# ai-workflow-demo — messy text → AI extraction → structured records → actions
+# ai-workflow-demo
 
-A small, runnable pipeline that turns **unstructured business text**
-(emails, invoices, meeting notes, web-form inquiries) into **structured
-records** and **action items** — with **schema validation** and a
-**human-review flag** for anything uncertain.
+**Pulls clean records and action items out of messy documents — validated,
+with a human-review flag.**
 
-    messy files  ->  AI extraction (strict JSON schema)  ->  records + tasks (+ review flag)
+Reads emails, invoices, meeting notes and web-form inquiries, extracts a
+strict JSON record from each, validates it, and flags the uncertain ones
+for a human instead of guessing.
 
 ## Why it exists
 Small teams drown in messy input that must become records and actions.
