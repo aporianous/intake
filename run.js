@@ -135,6 +135,23 @@ function csv(v) {
   const rows = tasks.map((t) => [t.source, t.task, t.owner, t.due, t.priority, t.review].map(csv).join(','));
   fs.writeFileSync(path.join(OUT, 'tasks.csv'), header + '\n' + rows.join('\n') + '\n');
 
+  // Optional final step: post the summary to a webhook (Discord or Slack).
+  const hook = process.env.WEBHOOK_URL;
+  if (hook) {
+    const review = tasks.filter((t) => t.review === 'yes').map((t) => '- ' + t.task).join('\n') || '(none)';
+    const text = 'Intake: ' + records.length + ' records, ' + tasks.length + ' action items, '
+      + flagged + ' need review.\n' + review;
+    const payload = /hooks\.slack\.com/.test(hook) ? { text } : { content: text };
+    try {
+      const res = await fetch(hook, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+      });
+      console.log(res.ok ? '  webhook: posted' : '  webhook: HTTP ' + res.status);
+    } catch (e) {
+      console.log('  webhook failed: ' + e.message);
+    }
+  }
+
   console.log('\nDone.');
   console.log('  out/records.jsonl  ' + records.length + ' structured records');
   console.log('  out/tasks.csv      ' + tasks.length + ' action items');

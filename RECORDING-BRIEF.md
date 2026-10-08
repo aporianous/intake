@@ -1,4 +1,4 @@
-# Recording brief — "ai-workflow-demo" (60–90 sec video)
+# Recording brief — "intake" (60–90 sec video)
 
 Goal: one short video that proves the pipeline runs and measures quality.
 No editing needed — a single unbroken screen recording.

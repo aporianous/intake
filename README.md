@@ -1,43 +1,50 @@
-# ai-workflow-demo
+# intake
 
-**Pulls clean records and action items out of messy documents — validated,
-with a human-review flag.**
+**Turn a folder of messy documents into a clean records export and a task
+list. Validated, with a human-review flag.**
 
-Reads emails, invoices, meeting notes and web-form inquiries, extracts a
-strict JSON record from each, validates it, and flags the uncertain ones
-for a human instead of guessing.
+Drop in emails, invoices, meeting notes, web-form inquiries — anything
+unstructured — and `intake` produces:
 
-## Why it exists
-Small teams drown in messy input that must become records and actions.
-The failure mode of naive automation is **silent bad data**: the AI
-invents a field, or drops one, and nobody notices. This pipeline is built
-to fail *loudly instead*: every record is validated, and anything low
-confidence or missing an owner/due is flagged for a human.
+- `out/records.jsonl` — one structured record per document
+- `out/tasks.csv` — the action items, with owner / due / priority
+- an optional **webhook post** (Discord or Slack) summarising what came in
 
-## Run it
+The point isn't just extraction — it's extraction you can *trust*. Every
+record is schema-checked, and anything low-confidence or missing an owner
+is flagged for a human instead of being silently accepted.
+
+## Why
+Naive AI automation fails *silently*: it invents a field or drops one and
+nobody notices until it matters. `intake` fails **loudly instead** —
+validate, and flag what's uncertain.
+
+## Run
 ```
-set GROQ_API_KEY=<your key>     # free at console.groq.com
+set GROQ_API_KEY=<your key>          # any OpenAI-compatible endpoint works
+node run.js
+
+# optional: post the summary somewhere
+set WEBHOOK_URL=https://discord.com/api/webhooks/...   # or a Slack hook
 node run.js
 ```
-Optional overrides: `LLM_MODEL`, `LLM_API_URL` (any OpenAI-compatible endpoint).
+Overrides: `LLM_MODEL`, `LLM_API_URL`.
 
-## What it does, step by step
+## How it works
 1. Reads every file in `samples/`.
-2. Sends each to an LLM with a **strict JSON schema** (temperature 0).
-3. **Validates** the result (required keys, types) — malformed output is retried, then flagged, never silently accepted.
-4. Writes:
-   - `out/records.jsonl` — one structured record per input
-   - `out/tasks.csv` — action items (task, owner, due, priority, review)
-5. Counts how many inputs were **flagged for human review**.
+2. Extracts a strict JSON record from each at temperature 0.
+3. **Validates** it (required keys, types); malformed output is retried,
+   then flagged — never silently accepted.
+4. Writes the records + task list.
+5. Optionally posts a summary to a webhook.
 
-## What to change for a real client
-- Swap `samples/` for their real inputs.
-- Edit the JSON shape in `run.js` to their fields.
-- Point `LLM_API_URL` at their provider.
-- Route `out/tasks.csv` into their tool (Sheets, Airtable, a task app).
+## Using it on your own data
+Point it at a folder, adjust the JSON shape in `run.js` to your fields,
+and route `out/tasks.csv` into your tool (Sheets, Airtable, a task app) —
+or let the webhook drop the summary into your team's channel.
 
-## Design notes (the parts that make it dependable)
-- **Temperature 0** + JSON mode → repeatable.
-- **Retry on malformed JSON**, then flag — no fabricated records.
-- **Validation + human-review flag** → the workflow can be trusted by a team.
-- **Zero dependencies** (Node built-ins only) → trivial to run and maintain.
+## Design notes
+- **Temperature 0 + JSON mode** → repeatable.
+- **Retry, then flag** → no fabricated records.
+- **Validation + human-review flag** → a team can rely on it.
+- **Zero dependencies** (Node built-ins only) → runs anywhere, easy to keep.
